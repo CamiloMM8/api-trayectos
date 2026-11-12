@@ -20,4 +20,6 @@ public interface VehiculoPersonaRepository extends JpaRepository<VehiculoPersona
 
     @Query("SELECT vp FROM VehiculoPersona vp WHERE vp.persona.id = :personaId AND vp.vehiculo.id = :vehiculoId")
     VehiculoPersona findByPersonaIdAndVehiculoId(@Param("personaId") int personaId, @Param("vehiculoId") int vehiculoId);
+
+    List<VehiculoPersona> findByPersonaId(int personaId);
 }

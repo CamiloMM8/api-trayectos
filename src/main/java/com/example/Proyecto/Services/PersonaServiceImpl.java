@@ -81,6 +81,13 @@ public class PersonaServiceImpl implements IPersonaService {
         if (persona.getTipoIdentificacion() != TipoIdentificacion.CC) {
             return false;
         }
-        return persona.getTipoPersona() == TipoPersona.A || persona.getTipoPersona() == TipoPersona.C;
+        if (persona.getTipoPersona() != TipoPersona.A && persona.getTipoPersona() != TipoPersona.C) {
+            return false;
+        }
+        if (persona.getTipoPersona() != TipoPersona.C) {
+            persona.setLicenciaConduccion(null);
+            persona.setFechaVigenciaLicencia(null);
+        }
+        return true;
     }
 }

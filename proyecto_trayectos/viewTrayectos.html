@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <title>Trayectos</title>
+    <link rel="stylesheet" type="text/css" href="./style.css" />
+  </head>
+  <body>
+    <div id="panel">
+      <input id="username" placeholder="Usuario" />
+      <input id="password" type="password" placeholder="Clave" />
+      <input id="apikey" placeholder="API Key" />
+      <input id="codigo" placeholder="Codigo de ruta" />
+      <button id="btnLogin" type="button">Ver ruta</button>
+      <button id="btnRefrescar" type="button">Refrescar</button>
+      <span id="estado"></span>
+    </div>
+    <div id="map"></div>
+
+    <script src="./index.js"></script>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvqm37bq1sw_ZWcCM-Nb4GMiEgYoDnvHk&callback=initMap&v=weekly&loading=async"
+      defer
+    ></script>
+  </body>
+</html>

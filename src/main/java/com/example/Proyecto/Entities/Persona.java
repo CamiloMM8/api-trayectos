@@ -1,10 +1,12 @@
 package com.example.Proyecto.Entities;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 import com.example.Proyecto.Enums.TipoIdentificacion;
 import com.example.Proyecto.Enums.TipoPersona;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,6 +46,13 @@ public class Persona implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "TipoPersona", nullable = false, length = 1)
     private TipoPersona tipoPersona;
+
+    @JsonProperty(value = "licenciaConduccionBase64", access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "LicenciaConduccion", columnDefinition = "LONGBLOB")
+    private byte[] licenciaConduccion;
+
+    @Column(name = "FechaVigenciaLicencia")
+    private LocalDate fechaVigenciaLicencia;
 
     @JsonIgnore
     @OneToOne(mappedBy = "personaEntity")
@@ -103,6 +112,22 @@ public class Persona implements Serializable {
 
     public void setTipoPersona(TipoPersona tipoPersona) {
         this.tipoPersona = tipoPersona;
+    }
+
+    public byte[] getLicenciaConduccion() {
+        return licenciaConduccion;
+    }
+
+    public void setLicenciaConduccion(byte[] licenciaConduccion) {
+        this.licenciaConduccion = licenciaConduccion;
+    }
+
+    public LocalDate getFechaVigenciaLicencia() {
+        return fechaVigenciaLicencia;
+    }
+
+    public void setFechaVigenciaLicencia(LocalDate fechaVigenciaLicencia) {
+        this.fechaVigenciaLicencia = fechaVigenciaLicencia;
     }
 
     public Usuario getUsuario() {
