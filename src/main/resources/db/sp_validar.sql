@@ -56,41 +56,41 @@ BEGIN
     AND u.login IS NULL;
 
   UPDATE PROYECTO.trayecto_tmp t
-  LEFT JOIN PROYECTO.Persona p
-    ON p.Identificacion = TRIM(t.identificacion) AND p.TipoPersona = 'C'
+  LEFT JOIN PROYECTO.persona p
+    ON p.identificacion = TRIM(t.identificacion) AND p.tipo_persona = 'C'
   SET t.observacion = CONCAT(IFNULL(t.observacion, ''), ' La identificacion no corresponde a un conductor.')
   WHERE t.id_cargue = p_id_cargue AND t.estado = 'CARGADO'
     AND t.identificacion IS NOT NULL AND TRIM(t.identificacion) <> ''
-    AND p.ID IS NULL;
+    AND p.id IS NULL;
 
   UPDATE PROYECTO.trayecto_tmp t
-  LEFT JOIN PROYECTO.Vehiculo v ON v.Placa = TRIM(t.placa)
+  LEFT JOIN PROYECTO.vehiculo v ON v.placa = TRIM(t.placa)
   SET t.observacion = CONCAT(IFNULL(t.observacion, ''), ' La placa no existe.')
   WHERE t.id_cargue = p_id_cargue AND t.estado = 'CARGADO'
     AND t.placa IS NOT NULL AND TRIM(t.placa) <> ''
-    AND v.ID IS NULL;
+    AND v.id IS NULL;
 
   UPDATE PROYECTO.trayecto_tmp t
-  JOIN PROYECTO.Vehiculo v ON v.Placa = TRIM(t.placa)
+  JOIN PROYECTO.vehiculo v ON v.placa = TRIM(t.placa)
   SET t.observacion = CONCAT(IFNULL(t.observacion, ''), ' Los documentos del vehiculo deben estar Habilitados.')
   WHERE t.id_cargue = p_id_cargue AND t.estado = 'CARGADO'
     AND (
-      NOT EXISTS (SELECT 1 FROM PROYECTO.VehiculoDocumento vd WHERE vd.VehiculoID = v.ID)
+      NOT EXISTS (SELECT 1 FROM PROYECTO.vehiculo_documento vd WHERE vd.vehiculoid = v.id)
       OR EXISTS (
-        SELECT 1 FROM PROYECTO.VehiculoDocumento vd
-        WHERE vd.VehiculoID = v.ID AND vd.Estado <> 'Habilitado'
+        SELECT 1 FROM PROYECTO.vehiculo_documento vd
+        WHERE vd.vehiculoid = v.id AND vd.estado <> 'Habilitado'
       )
     );
 
   UPDATE PROYECTO.trayecto_tmp t
-  JOIN PROYECTO.Persona p
-    ON p.Identificacion = TRIM(t.identificacion) AND p.TipoPersona = 'C'
-  JOIN PROYECTO.Vehiculo v ON v.Placa = TRIM(t.placa)
-  LEFT JOIN PROYECTO.VehiculoPersona vp
-    ON vp.PersonaID = p.ID AND vp.VehiculoID = v.ID AND vp.Estado = 'PO'
+  JOIN PROYECTO.persona p
+    ON p.identificacion = TRIM(t.identificacion) AND p.tipo_persona = 'C'
+  JOIN PROYECTO.vehiculo v ON v.placa = TRIM(t.placa)
+  LEFT JOIN PROYECTO.vehiculo_persona vp
+    ON vp.personaid = p.id AND vp.vehiculoid = v.id AND vp.estado = 'PO'
   SET t.observacion = CONCAT(IFNULL(t.observacion, ''), ' El conductor debe poder operar (PO) el vehiculo.')
   WHERE t.id_cargue = p_id_cargue AND t.estado = 'CARGADO'
-    AND vp.ID IS NULL;
+    AND vp.id IS NULL;
 
   UPDATE PROYECTO.trayecto_tmp t
   JOIN (
@@ -106,20 +106,20 @@ BEGIN
   WHERE t.id_cargue = p_id_cargue AND t.estado = 'CARGADO';
 
   UPDATE PROYECTO.trayecto_tmp t
-  JOIN PROYECTO.Trayecto tr
-    ON tr.CodigoRuta = TRIM(t.codigo_ruta)
-   AND tr.OrdenParada = CAST(TRIM(t.orden_parada) AS SIGNED)
+  JOIN PROYECTO.trayecto tr
+    ON tr.codigo_ruta = TRIM(t.codigo_ruta)
+   AND tr.orden_parada = CAST(TRIM(t.orden_parada) AS SIGNED)
   SET t.observacion = CONCAT(IFNULL(t.observacion, ''), ' Ya existe una parada con ese orden en la ruta.')
   WHERE t.id_cargue = p_id_cargue AND t.estado = 'CARGADO'
     AND TRIM(t.orden_parada) REGEXP '^[0-6]$';
 
   UPDATE PROYECTO.trayecto_tmp t
-  JOIN PROYECTO.Trayecto tr ON tr.CodigoRuta = TRIM(t.codigo_ruta)
-  JOIN PROYECTO.Persona p ON p.ID = tr.PersonaID
-  JOIN PROYECTO.Vehiculo v ON v.ID = tr.VehiculoID
+  JOIN PROYECTO.trayecto tr ON tr.codigo_ruta = TRIM(t.codigo_ruta)
+  JOIN PROYECTO.persona p ON p.id = tr.personaid
+  JOIN PROYECTO.vehiculo v ON v.id = tr.vehiculoid
   SET t.observacion = CONCAT(IFNULL(t.observacion, ''), ' El codigo de ruta ya pertenece a otro conductor o vehiculo.')
   WHERE t.id_cargue = p_id_cargue AND t.estado = 'CARGADO'
-    AND (p.Identificacion <> TRIM(t.identificacion) OR v.Placa <> TRIM(t.placa));
+    AND (p.identificacion <> TRIM(t.identificacion) OR v.placa <> TRIM(t.placa));
 
   UPDATE PROYECTO.trayecto_tmp t
   JOIN (
@@ -138,20 +138,20 @@ BEGIN
     FROM PROYECTO.trayecto_tmp
     WHERE id_cargue = p_id_cargue AND estado = 'CARGADO' AND TRIM(orden_parada) = '0'
   ) inicial_archivo ON inicial_archivo.codigo_ruta = t.codigo_ruta
-  LEFT JOIN PROYECTO.Trayecto tr
-    ON tr.CodigoRuta = TRIM(t.codigo_ruta) AND tr.OrdenParada = 0
+  LEFT JOIN PROYECTO.trayecto tr
+    ON tr.codigo_ruta = TRIM(t.codigo_ruta) AND tr.orden_parada = 0
   SET t.observacion = CONCAT(IFNULL(t.observacion, ''), ' La ruta debe tener parada inicial con orden 0.')
   WHERE t.id_cargue = p_id_cargue AND t.estado = 'CARGADO'
     AND inicial_archivo.codigo_ruta IS NULL
-    AND tr.ID IS NULL;
+    AND tr.id IS NULL;
 
   UPDATE PROYECTO.trayecto_tmp t
   JOIN (
     SELECT tmp.codigo_ruta,
            COUNT(*) + (
              SELECT COUNT(*)
-             FROM PROYECTO.Trayecto tr
-             WHERE tr.CodigoRuta = TRIM(tmp.codigo_ruta)
+             FROM PROYECTO.trayecto tr
+             WHERE tr.codigo_ruta = TRIM(tmp.codigo_ruta)
            ) AS total
     FROM PROYECTO.trayecto_tmp tmp
     WHERE tmp.id_cargue = p_id_cargue AND tmp.estado = 'CARGADO'

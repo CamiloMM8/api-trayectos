@@ -6,12 +6,12 @@ DROP PROCEDURE IF EXISTS PROYECTO.PROCESAR_TRAYECTO_EXCEL;
 DELIMITER $$
 CREATE PROCEDURE PROYECTO.PROCESAR_TRAYECTO_EXCEL(IN p_id_cargue DOUBLE)
 BEGIN
-  INSERT INTO PROYECTO.Trayecto (
-    PersonaID, VehiculoID, CodigoRuta, Ubicacion, OrdenParada, Latitud, Longitud, LoginRegistro
+  INSERT INTO PROYECTO.trayecto (
+    personaid, vehiculoid, codigo_ruta, ubicacion, orden_parada, latitud, longitud, login_registro
   )
   SELECT
-    p.ID,
-    v.ID,
+    p.id,
+    v.id,
     TRIM(t.codigo_ruta),
     TRIM(t.ubicacion),
     CAST(TRIM(t.orden_parada) AS SIGNED),
@@ -25,8 +25,8 @@ BEGIN
     END,
     TRIM(t.login_registro)
   FROM PROYECTO.trayecto_tmp t
-  JOIN PROYECTO.Persona p ON p.Identificacion = TRIM(t.identificacion)
-  JOIN PROYECTO.Vehiculo v ON v.Placa = TRIM(t.placa)
+  JOIN PROYECTO.persona p ON p.identificacion = TRIM(t.identificacion)
+  JOIN PROYECTO.vehiculo v ON v.placa = TRIM(t.placa)
   WHERE t.id_cargue = p_id_cargue AND t.estado = 'VALIDADO';
 
   UPDATE PROYECTO.trayecto_tmp
