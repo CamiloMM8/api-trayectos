@@ -2,11 +2,14 @@ package com.example.Proyecto.Entities;
 
 import java.io.Serializable;
 
+import com.example.Proyecto.Enums.EstadoCargue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -45,8 +48,9 @@ public class TrayectoTmp implements Serializable {
     @Column(name = "login_registro")
     private String loginRegistro;
 
-    @Column(name = "estado", nullable = false, length = 10)
-    private String estado;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", nullable = false, columnDefinition = "ENUM('CARGADO','VALIDADO','PROCESADO','ERROR')")
+    private EstadoCargue estado;
 
     @Column(name = "observacion", length = 1000)
     private String observacion;
@@ -127,11 +131,11 @@ public class TrayectoTmp implements Serializable {
         this.loginRegistro = loginRegistro;
     }
 
-    public String getEstado() {
+    public EstadoCargue getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(EstadoCargue estado) {
         this.estado = estado;
     }
 

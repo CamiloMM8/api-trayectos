@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS trayecto_tmp (
+CREATE TABLE IF NOT EXISTS PROYECTO.trayecto_tmp (
   id bigint NOT NULL AUTO_INCREMENT,
   identificacion varchar(100) DEFAULT NULL,
   placa varchar(20) DEFAULT NULL,
@@ -8,13 +8,9 @@ CREATE TABLE IF NOT EXISTS trayecto_tmp (
   latitud varchar(40) DEFAULT NULL,
   longitud varchar(40) DEFAULT NULL,
   login_registro varchar(100) DEFAULT NULL,
-  estado varchar(10) NOT NULL,
+  estado ENUM('CARGADO', 'VALIDADO', 'PROCESADO', 'ERROR') NOT NULL,
   observacion varchar(1000) DEFAULT NULL,
   id_cargue double NOT NULL,
   PRIMARY KEY (id),
-  KEY idx_trayecto_tmp_cargue (id_cargue),
-  CONSTRAINT trayecto_tmp_estado_check CHECK (estado IN ('CARGADO', 'VALIDADO', 'PROCESADO', 'ERROR'))
+  KEY idx_trayecto_tmp_cargue (id_cargue)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Procedimientos, en archivos aparte para poder recrearlos:
--- sp_cargar.sql, sp_validar.sql, sp_procesar.sql

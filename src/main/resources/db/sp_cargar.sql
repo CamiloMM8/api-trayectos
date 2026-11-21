@@ -1,7 +1,10 @@
-DROP PROCEDURE IF EXISTS CARGAR_TRAYECTO_EXCEL;
+-- Cargue: copia cada fila del Excel a trayecto_tmp sin modificar los valores.
+-- El estado queda CARGADO y la observacion vacia.
+
+DROP PROCEDURE IF EXISTS PROYECTO.CARGAR_TRAYECTO_EXCEL;
 
 DELIMITER $$
-CREATE PROCEDURE CARGAR_TRAYECTO_EXCEL(
+CREATE PROCEDURE PROYECTO.CARGAR_TRAYECTO_EXCEL(
   IN p_identificacion VARCHAR(100),
   IN p_placa VARCHAR(20),
   IN p_codigo_ruta VARCHAR(30),
@@ -13,7 +16,7 @@ CREATE PROCEDURE CARGAR_TRAYECTO_EXCEL(
   IN p_id_cargue DOUBLE
 )
 BEGIN
-  INSERT INTO trayecto_tmp (
+  INSERT INTO PROYECTO.trayecto_tmp (
     identificacion, placa, codigo_ruta, ubicacion, orden_parada,
     latitud, longitud, login_registro, estado, observacion, id_cargue
   ) VALUES (

@@ -123,12 +123,7 @@ public class ExcelService implements IExcelService {
         if (cell == null) {
             return null;
         }
-        String valor = formatter.formatCellValue(cell);
-        if (valor == null) {
-            return null;
-        }
-        valor = valor.trim();
-        return valor.isEmpty() ? null : valor;
+        return formatter.formatCellValue(cell);
     }
 
     private boolean filaVacia(String... valores) {
