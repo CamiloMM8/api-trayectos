@@ -3,12 +3,12 @@ package com.example.Proyecto.Services.Interfaces;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Proyecto.Entities.Vehiculo;
 import com.example.Proyecto.Entities.VehiculoDocumento;
 import com.example.Proyecto.Enums.EstadoVehiculoDocumento;
 import com.example.Proyecto.Enums.TipoVehiculo;
-import com.example.Proyecto.Request.DocumentoPdfRequest;
 
 public interface IVehiculoService {
 
@@ -32,5 +32,5 @@ public interface IVehiculoService {
 
     boolean agregarDocumento(int vehiculoId, VehiculoDocumento vehiculoDocumento);
 
-    boolean cargarDocumentosPdf(java.util.List<DocumentoPdfRequest> documentos);
+    boolean cargarDocumentoPdf(int vehiculoDocumentoId, MultipartFile archivo);
 }

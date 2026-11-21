@@ -2,11 +2,10 @@ package com.example.Proyecto.Controller;
 
 import java.util.List;
 
-import com.example.Proyecto.Request.DocumentoPdfRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Proyecto.Entities.Vehiculo;
 import com.example.Proyecto.Entities.VehiculoDocumento;
@@ -82,8 +83,9 @@ public class VehiculoController {
         return vehiculoService.agregarDocumento(id, vehiculoDocumento);
     }
 
-    @PostMapping("/vehiculo/documentos/pdf")
-    public boolean cargarDocumentosPdf(@RequestBody List<DocumentoPdfRequest> documentos) {
-        return vehiculoService.cargarDocumentosPdf(documentos);
+    @PostMapping(value = "/vehiculo/documentos/pdf", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public boolean cargarDocumentoPdf(@RequestParam("vehiculoDocumentoId") int vehiculoDocumentoId,
+            @RequestParam("archivo") MultipartFile archivo) {
+        return vehiculoService.cargarDocumentoPdf(vehiculoDocumentoId, archivo);
     }
 }

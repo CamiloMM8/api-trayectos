@@ -4,9 +4,8 @@ import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
 
-import com.example.Proyecto.Request.DocumentoPdfRequest;
-
 import org.apache.logging.log4j.Logger;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Pageable;
@@ -259,22 +258,42 @@ public class VehiculoServiceImpl implements IVehiculoService {
     }
 
     @Override
-    public boolean cargarDocumentosPdf(List<DocumentoPdfRequest> documentos) {
+    public boolean cargarDocumentoPdf(int vehiculoDocumentoId, MultipartFile archivo) {
         try {
-            if (documentos == null || documentos.isEmpty()) {
+            if (archivo == null || archivo.isEmpty() || !esPdf(archivo)) {
                 return false;
             }
-            for (DocumentoPdfRequest item : documentos) {
-                VehiculoDocumento vd = vehiculoDocumentoRepository.findById(item.getVehiculoDocumentoId());
-                if (vd == null || item.getPdfBase64() == null || item.getPdfBase64().isBlank()) {
-                    return false;
-                }
-                vd.setDocumentoPdfBase64(Base64.getDecoder().decode(item.getPdfBase64()));
-                vehiculoDocumentoRepository.save(vd);
+            VehiculoDocumento vd = vehiculoDocumentoRepository.findById(vehiculoDocumentoId);
+            if (vd == null) {
+                return false;
             }
+            String pdfBase64 = Base64.getEncoder().encodeToString(archivo.getBytes());
+            vd.setDocumentoPdfBase64(pdfBase64);
+            vehiculoDocumentoRepository.save(vd);
             return true;
         } catch (Exception e) {
             logger.error("ERROR CARGAR_PDF_DOCUMENTOS");
+            return false;
+        }
+    }
+
+    private boolean esPdf(MultipartFile archivo) {
+        String nombre = archivo.getOriginalFilename();
+        boolean extensionPdf = nombre != null && nombre.toLowerCase().endsWith(".pdf");
+        String contentType = archivo.getContentType();
+        boolean tipoPdf = contentType != null && contentType.equalsIgnoreCase("application/pdf");
+        if (!extensionPdf && !tipoPdf) {
+            return false;
+        }
+        try {
+            byte[] contenido = archivo.getBytes();
+            return contenido.length >= 5
+                    && contenido[0] == '%'
+                    && contenido[1] == 'P'
+                    && contenido[2] == 'D'
+                    && contenido[3] == 'F'
+                    && contenido[4] == '-';
+        } catch (Exception e) {
             return false;
         }
     }

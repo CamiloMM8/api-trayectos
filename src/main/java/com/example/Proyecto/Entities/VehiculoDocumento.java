@@ -1,6 +1,7 @@
 package com.example.Proyecto.Entities;
 
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
 import com.example.Proyecto.Enums.EstadoVehiculoDocumento;
@@ -50,8 +51,6 @@ public class VehiculoDocumento implements Serializable {
     @Column(name = "Estado", nullable = false, length = 20)
     private EstadoVehiculoDocumento estado;
 
-    @JsonProperty("documentoPdfBase64")
-    @JsonAlias("DocumentoPdfBase64")
     @Column(name = "DocumentoPdfBase64", columnDefinition = "LONGBLOB")
     private byte[] documentoPdfBase64;
 
@@ -106,11 +105,20 @@ public class VehiculoDocumento implements Serializable {
         this.estado = estado;
     }
 
-    public byte[] getDocumentoPdfBase64() {
-        return documentoPdfBase64;
+    @JsonProperty("documentoPdfBase64")
+    @JsonAlias("DocumentoPdfBase64")
+    public String getDocumentoPdfBase64() {
+        if (documentoPdfBase64 == null) {
+            return null;
+        }
+        return new String(documentoPdfBase64, StandardCharsets.US_ASCII);
     }
 
-    public void setDocumentoPdfBase64(byte[] documentoPdfBase64) {
-        this.documentoPdfBase64 = documentoPdfBase64;
+    @JsonProperty("documentoPdfBase64")
+    @JsonAlias("DocumentoPdfBase64")
+    public void setDocumentoPdfBase64(String documentoPdfBase64) {
+        this.documentoPdfBase64 = documentoPdfBase64 == null
+                ? null
+                : documentoPdfBase64.getBytes(StandardCharsets.US_ASCII);
     }
 }
