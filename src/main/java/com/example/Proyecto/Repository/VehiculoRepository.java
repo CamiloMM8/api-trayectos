@@ -38,6 +38,6 @@ public interface VehiculoRepository extends JpaRepository<Vehiculo, Serializable
     @Query("SELECT DISTINCT v FROM Vehiculo v JOIN v.documentos vd WHERE vd.fechaVencimiento BETWEEN CURRENT_DATE AND :fechaLimite")
     List<Vehiculo> findWithDocumentosPorVencer(@Param("fechaLimite") LocalDate fechaLimite);
 
-    @Query("SELECT DISTINCT v FROM Vehiculo v LEFT JOIN FETCH v.documentos LEFT JOIN FETCH v.conductores c LEFT JOIN FETCH c.persona WHERE v.placa = :placa")
+    @Query("SELECT DISTINCT v FROM Vehiculo v LEFT JOIN FETCH v.documentos d LEFT JOIN FETCH d.documento WHERE v.placa = :placa")
     Vehiculo findDetalleByPlaca(@Param("placa") String placa);
 }

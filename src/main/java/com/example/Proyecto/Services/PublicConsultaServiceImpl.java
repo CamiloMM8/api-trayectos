@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.Proyecto.Entities.Vehiculo;
 import com.example.Proyecto.Entities.VehiculoPersona;
@@ -45,8 +47,17 @@ public class PublicConsultaServiceImpl implements IPublicConsultaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Vehiculo vehiculoDetallePorPlaca(String placa) {
-        return vehiculoRepository.findDetalleByPlaca(placa);
+        Vehiculo vehiculo = vehiculoRepository.findDetalleByPlaca(placa);
+        if (vehiculo == null) {
+            return null;
+        }
+        Hibernate.initialize(vehiculo.getConductores());
+        for (VehiculoPersona conductor : vehiculo.getConductores()) {
+            Hibernate.initialize(conductor.getPersona());
+        }
+        return vehiculo;
     }
 
     @Override
